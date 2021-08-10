@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-__all__ = ("Card", "Suit", "Value")
+__all__ = ("Card", "DeckOfCards", "Suit", "Value")
 
 import enum
+import random
 
 
 class Suit(enum.Enum):
-    CLUBS = enum.auto()
     SPADES = enum.auto()
     DIAMONDS = enum.auto()
+    CLUBS = enum.auto()
     HEARTS = enum.auto()
 
     @classmethod
@@ -97,8 +98,19 @@ class Card:
         return cls(value, suit)
 
     def __repr__(self):
-        return f"<Card[{self.shorthand}]>"
+        return self.shorthand
+
+    def __str__(self):
+        return f"Card[{self.shorthand}]"
 
     @property
     def shorthand(self) -> str:
         return str(self.value) + self.suit.name[0].lower()
+
+
+class DeckOfCards(list):
+    def __init__(self):
+        super().__init__(Card(v, s) for v in Value for s in Suit)
+
+    def shuffle(self):
+        random.shuffle(self)
