@@ -103,6 +103,15 @@ class Card:
     def __str__(self):
         return f"Card[{self.shorthand}]"
 
+    def __eq__(self, other):
+        try:
+            return self.value == other.value and self.suit == other.suit
+        except AttributeError:
+            return False
+
+    def __hash__(self):
+        return hash((self.value, self.suit))
+
     @property
     def shorthand(self) -> str:
         return str(self.value) + self.suit.name[0].lower()

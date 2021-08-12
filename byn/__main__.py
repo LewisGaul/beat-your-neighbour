@@ -1,35 +1,36 @@
-import pathlib
 import tkinter as tk
 
-from .cards import Card
-
-IMG_DIR = pathlib.Path("img")
-
+from .game import Game
+from .widgets import CardPileWidget
 
 app = tk.Tk()
 
+game = Game()
 
-class CardWidget(tk.Label):
-    def __init__(self, master, card: str | Card, *args, **kwargs):
-        if isinstance(card, str):
-            card = Card.from_str(card)
-        self.card = card
-        self._image = tk.PhotoImage(
-            file=IMG_DIR / (self._get_img_filename(card) + ".png")
-        )
-        kwargs["image"] = self._image
-        super().__init__(master, *args, **kwargs)
+player_piles: dict[int, CardPileWidget] = {
+    p: CardPileWidget(app, num_cards=game.get_player_hand_size(p), show_card=False)
+    for p in game.remaining_players
+}
+centre_pile = CardPileWidget(app)
 
-    @staticmethod
-    def _get_img_filename(card) -> str:
-        if 2 <= card.value.value <= 10:
-            val_str = str(card.value.value)
-        else:
-            val_str = card.value.name
-        return f"{val_str}_of_{card.suit.name}".lower()
+player_piles[0].pack(side=tk.LEFT)
+centre_pile.pack(side=tk.LEFT)
+player_piles[1].pack(side=tk.LEFT)
 
 
-card = CardWidget(app, "As")
-card.pack()
+def next_card(_=None):
+    player = game.next_player
+    game.next_action()
+    player_piles[player].update_cards(new_num=game.get_player_hand_size(player))
+    centre_pile.update_cards(
+        game.centre_pile[-1] if len(game.centre_pile) > 0 else None,
+        new_num=len(game.centre_pile),
+    )
+    print(
+        f"Next player: {game.next_player}  ({game.get_player_hand_size(0)}-{game.get_player_hand_size(1)})"
+    )
+
+
+app.bind("<ButtonRelease-1>", next_card)
 
 app.mainloop()

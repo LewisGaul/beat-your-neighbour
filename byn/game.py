@@ -37,11 +37,21 @@ class Game:
     def remaining_players(self) -> list[PlayerID]:
         return list(self._player_hands)
 
-    def next_card(self):
+    def next_action(self):
         if self.loser is not None:
             raise RuntimeError(f"Game already finished, player {self.loser} lost")
+
+        # If cards need collecting then do this.
+        if self._cards_until_collect == 0:
+            self._player_hands[self.next_player].extend(self.centre_pile)
+            self.centre_pile = []
+            self._cards_until_collect = None
+            return
+
+        # Play the next card
         next_card = self._player_hands[self.next_player].pop(0)
         self.centre_pile.append(next_card)
+
         # Special cards always reset the counter and pass on to next player.
         if next_card.value in self.SPECIAL_CARD_VALUES:
             self._update_next_player()
@@ -49,15 +59,13 @@ class Game:
         # Otherwise need to check whether cards need to be collected.
         elif self._cards_until_collect is None:
             self._update_next_player()
-        elif self._cards_until_collect == 1:
-            self._player_hands[self.next_player].extend(self.centre_pile)
-            self.centre_pile = []
-            self._cards_until_collect = None
         else:
             self._cards_until_collect -= 1
 
     def get_player_hand_size(self, player: PlayerID) -> int:
-        if player not in self._player_hands:
+        if player < 0 or player >= self.num_players:
+            raise ValueError(f"Unexpected player ID {player!r}")
+        elif player not in self._player_hands:
             return 0
         else:
             return len(self._player_hands[player])
