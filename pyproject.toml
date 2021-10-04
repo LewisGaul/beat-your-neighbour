@@ -1,0 +1,246 @@
+# BUILD
+# =====
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = [
+    "setuptools >= 40",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+
+# TOOLS
+# =====
+
+# BLACK
+# -----
+[tool.black]
+line-length = 95
+target_version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.git/
+    | .*venv.*/
+    | __pycache__/
+  )
+)
+'''
+
+
+# ISORT
+# -----
+[tool.isort]
+# Make compatible with Black
+line_length = 95
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+# Other options
+order_by_type = true
+lines_after_imports = 2
+skip_glob = "*venv*"
+
+
+# PYTEST
+# ------
+[tool.pytest.ini_options]
+testpaths = "tests/"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+python_classes = "*Tests, *Test"
+python_functions = "test_*"
+addopts = "--no-flaky-report"
+filterwarnings = [
+    'ignore:"@coroutine" decorator is deprecated:DeprecationWarning',
+]
+
+
+# PYLINT
+# ------
+[tool.pylint.master]
+# Python code to execute, usually for sys.path manipulation.
+init-hook = ""
+# Add files or directories to the blacklist (base names, not paths).
+ignore = ""
+# Pickle collected data for later comparisons.
+persistent = "no"
+# List of plugins (as comma separated values of python modules names) to load,
+# usually to register additional checkers.
+load-plugins = ""
+
+[tool.pylint.reports]
+# Set the output format. Available formats are text, parseable, colorized.
+output-format = "text"
+# Put messages in a separate file for each module / package specified on the
+# command line instead of printing them on stdout. Reports (if any) will be
+# written in a file name "pylint_global.txt".
+files-output = "no"
+# Whether to display a full report or only the messages.
+reports = "no"
+# Python expression which should return a note less than 10.
+evaluation = "10.0 - 10 * ((5 * error + warning + refactor + convention) / statement)"
+
+[tool.pylint.message_control]
+# Disable the message, report, category or checker with the given IDs.
+disable = """
+    # Disable cosmetic warnings and some style ones. Should usually be
+    # caught/handled in review though it's acceptable to leave warnings that
+    # are objectively coding standards violations on.
+    ,arguments-differ,
+    ,consider-iterating-dictionary,
+    ,design,
+    ,duplicate-code,
+    ,format,
+    ,global-statement,
+    ,invalid-name,
+    ,line-too-long,
+    ,logging-format-interpolation,
+    ,missing-module-docstring,
+    ,missing-class-docstring,
+    ,missing-function-docstring,
+    ,no-init,
+    ,protected-access,
+    ,redefined-argument-from-local,
+    ,redefined-variable-type,
+    ,#redundant-keyword-arg,
+    ,#simplifiable-if-statement,
+    ,#ungrouped-imports,
+    ,#unnecessary-lambda,
+    ,wrong-import-position,
+    ,#wrong-import-order,
+
+    # End of cosmetic warnings.
+    #---------------------------------
+
+    # Anything below should be a 'bug' in pylint, where that can be a patently
+    # invalid warning, or just one whose false-positive-to-bug ratio is just
+    # too high.
+
+    # Any hint of NotImplementedError makes a class or method 'abstract',
+    # apparently.
+    ,abstract-class-little-used,
+    ,abstract-class-not-used,
+    ,abstract-method,
+
+    # Many false positives.
+    ,cyclic-import,
+
+    # Imports may be performed lazily if expensive.
+    ,import-outside-toplevel,
+
+    # Broken for enum values: https://github.com/PyCQA/pylint/issues/3649
+    ,invalid-str-returned,
+
+    # https://github.com/PyCQA/pylint/issues/3507
+    ,isinstance-second-argument-not-valid-type,
+
+    # Seems totally broken if using {} formating with logging.
+    ,#logging-too-many-args,
+
+    # Often false positives.
+    ,maybe-no-member,
+
+    # Often clearer to do 'if ... return ... else ... return'.
+    ,no-else-return,
+    ,no-else-raise,
+
+    # Sometimes it's appropriate for a method to not use self (e.g. ~stub
+    # implementations that need to conform to some interface).
+    ,no-self-use,
+
+    # https://github.com/PyCQA/pylint/issues/701
+    ,not-an-iterable,
+
+    # Confused by raising exc instances from locals.
+    ,raising-bad-type,
+
+    # * or ** unpacking is perfectly valid.
+    ,#star-args,
+
+    # Sometimes want to compare types exactly...
+    ,unidiomatic-typecheck,
+
+    # Same category as not-an-iterable - has been added to the issue thread.
+    ,unsupported-membership-test,
+
+    # Sometimes need to conform to an interface...
+    ,unused-argument,
+
+    # 'for ... return ... else' isn't a bad idiom.
+    ,useless-else-on-loop,
+
+    # https://github.com/PyCQA/pylint/issues/2270
+    ,useless-super-delegation,
+    """
+
+[tool.pylint.variables]
+# Tells whether we should check for unused import in __init__ files.
+init-import = "no"
+# A regular expression matching the beginning of the name of dummy variables
+# (i.e. not used).
+dummy-variables-rgx = "_|dummy"
+# List of additional names supposed to be defined in builtins. Remember that
+# you should avoid to define new builtins when possible.
+additional-builtins = ""
+
+[tool.pylint.typecheck]
+# Tells whether missing members accessed in mixin class should be ignored. A
+# mixin class is detected if its name ends with "mixin" (case insensitive).
+ignore-mixin-members = "yes"
+# List of classes names for which member attributes should not be checked
+# (useful for classes with attributes dynamically set).
+ignored-classes = ""
+# List of members which are set dynamically and missed by pylint inference
+# system, and so shouldn't trigger E0201 when accessed. Python regular
+# expressions are accepted.
+generated-members = ""
+
+[tool.pylint.basic]
+# Using defaults.
+
+[tool.pylint.format]
+# Maximum number of characters on a single line.
+max-line-length = "100"
+# Maximum number of lines in a module
+max-module-lines = "1000"
+# String used as indentation unit. This is usually " " (4 spaces) or "\t".
+indent-string = "    "
+
+[tool.pylint.miscellaneous]
+# List of note tags to take in consideration, separated by a comma.
+notes = "FIXME,XXX,TODO,@@@"
+
+[tool.pylint.classes]
+# List of method names used to declare (i.e. assign) instance attributes.
+defining-attr-methods = "__init__,__new__,setUp,setUpClass,_init"
+# List of valid names for the first argument in a class method.
+valid-classmethod-first-arg = "cls"
+# List of valid names for the first argument in a metaclass class method.
+valid-metaclass-classmethod-first-arg = "mcs"
+
+[tool.pylint.similarities]
+# This checker is disabled.
+
+[tool.pylint.design]
+# This checker is disabled.
+
+[tool.pylint.imports]
+# Deprecated modules which should not be used, separated by a comma
+deprecated-modules = ""
+# Create a graph of every (i.e. internal and external) dependencies in the
+# given file (report RP0402 must not be disabled)
+import-graph = ""
+# Create a graph of external dependencies in the given file (report RP0402 must
+# not be disabled)
+ext-import-graph = ""
+# Create a graph of internal dependencies in the given file (report RP0402 must
+# not be disabled)
+int-import-graph = ""
+
+[tool.pylint.exceptions]
+# Exceptions that will emit a warning when being caught.
+overgeneral-exceptions = "BaseException"

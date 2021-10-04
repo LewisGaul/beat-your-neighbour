@@ -3,6 +3,7 @@ import tkinter as tk
 from .game import Game
 from .widgets import CardPileWidget
 
+
 app = tk.Tk()
 
 game = Game()

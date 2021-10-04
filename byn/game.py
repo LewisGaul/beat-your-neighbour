@@ -4,9 +4,10 @@ from . import cards
 from .cards import Card, DeckOfCards
 
 
-class Game:
+PlayerID = int
 
-    PlayerID = int
+
+class Game:
 
     SPECIAL_CARD_VALUES = {
         cards.Value.JACK: 1,
@@ -19,13 +20,11 @@ class Game:
         self.num_players = num_players
         self.next_player = 0
         # Take cards from the start of the player hands lists.
-        self._player_hands: dict[int, list[Card]] = {
-            p: [] for p in range(self.num_players)
-        }
+        self._player_hands: dict[int, list[Card]] = {p: [] for p in range(self.num_players)}
         # Add cards to the end of the centre cards.
         self.centre_pile: list[Card] = []
         self._cards_until_collect: Optional[int] = None
-        self.loser = None
+        self.loser: Optional[PlayerID] = None
         deck = DeckOfCards()
         deck.shuffle()
         player_idx = 0

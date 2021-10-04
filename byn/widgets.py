@@ -31,13 +31,11 @@ class CardPileWidget(tk.Frame):
         if num_cards > 0:
             self._update_top_card(top_card)
 
-    def update_cards(
-        self, new_top_card: Optional[Card] = None, *, new_num: int
-    ) -> None:
+    def update_cards(self, new_top_card: Optional[Card] = None, *, new_num: int) -> None:
         self.num_cards = new_num
         if self.num_cards:
             self._update_top_card(new_top_card)
-        else:
+        elif self._top_card_widget:
             self._top_card_widget.destroy()
             self._top_card_widget = None
 
@@ -53,9 +51,7 @@ class CardWidget(tk.Label):
         if isinstance(card, str):
             card = Card.from_str(card)
         self.card = card
-        self._image = tk.PhotoImage(
-            file=IMG_DIR / (self._get_img_filename(card) + ".png")
-        )
+        self._image = tk.PhotoImage(file=IMG_DIR / (self._get_img_filename(card) + ".png"))
         kwargs["image"] = self._image
         super().__init__(master, **kwargs)
 

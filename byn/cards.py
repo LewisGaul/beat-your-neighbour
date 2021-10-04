@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 __all__ = ("Card", "DeckOfCards", "Suit", "Value")
 
 import enum
@@ -54,11 +55,11 @@ class Value(enum.IntEnum):
             pass
 
         try:
-            val = int(s)
+            intval = int(s)
         except (TypeError, ValueError):
             pass
         else:
-            return cls(val)
+            return cls(intval)
 
         special_vals = [Value.ACE, Value.TEN, Value.JACK, Value.QUEEN, Value.KING]
         if val := {v.name[0]: v for v in special_vals}.get(s.upper()):
@@ -78,7 +79,7 @@ class Card:
     def __init__(self, value: int | Value, suit: str | Suit):
         if isinstance(suit, str):
             for possible_suit in Suit:
-                if suit.upper() in [Suit.name, Suit.name[0]]:
+                if suit.upper() in [possible_suit.name, possible_suit.name[0]]:
                     suit = possible_suit
                     break
             else:
